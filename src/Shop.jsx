@@ -3,9 +3,13 @@ import ReactPaginate from "react-paginate"
 import Categories from "./Categories"
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+import 'swiper/css';
 
 export default function Shop() {
-    const [products, setProducts] = useState([])
+  const [products, setProducts] = useState([])
+  const [featuredImages, setFeaturedImage] = useState([])
 
 
     function getProducts(data) {
@@ -15,12 +19,16 @@ export default function Shop() {
     }
 
   const fetchUserData = () => {
-    fetch("https://dummyjson.com/products")
+
+
+  
+    fetch("https://tastytests.x10.mx/wp/wp-json/wp/v2/prod?_embed")
       .then(response => {
         return response.json()
       })
       .then(data => {
-         const productsWithShow = data.products.map(product => {
+        console.log(data);
+         const productsWithShow = data.map(product => {
     return { ...product, show: true }; // Set 'show' to true initially, modify it as needed
   });
         setProducts(productsWithShow);
@@ -75,7 +83,7 @@ const [selectedProds, setSelectedProds] = useState(() => {
     setSelectedProds(currentSelectedProds => {
       return [
         ...currentSelectedProds,
-        { id: prod.id, title: prod.title, price: prod.price },
+        { id: prod.id, title: prod.title.rendered, price: Number(prod.excerpt.rendered.replace("<p>", " ").replace("</p>", "").replace("/n", "")) },
       ]
     })
   }
@@ -96,11 +104,36 @@ const [selectedProds, setSelectedProds] = useState(() => {
           {currentItems && (
               <>
                   <Categories products={products} getProducts={getProducts} />
-        <ul>
+          <ul
+            style={{ display: "flex", flexWrap:  "wrap", gap: 40}}
+          >
           {currentItems.map(product => (
             product.show === true ? <li
+              style={{width: 200}}
               onClick={e => productClickHandle(product)}
-              key={product.id}>{product.title} {product.price}</li> : null
+              key={product.id}>
+              {product.title.rendered}
+              {product.excerpt.rendered.replace("<p>", " ").replace("</p>", "")}
+
+              <img
+                style={{width: 100}}
+                src={product._embedded['wp:featuredmedia'][0].source_url} alt={product.title.rendered + " image"} />
+              
+
+              <Swiper
+      spaceBetween={50}
+      slidesPerView={1}
+      onSlideChange={() => console.log('slide change')}
+      onSwiper={(swiper) => console.log(swiper)}
+    >
+      {/* {product.images.map((slideContent, index) => (
+        <SwiperSlide key={slideContent} virtualIndex={index}>
+          <img src={slideContent} alt={product.title + " image"} />
+        </SwiperSlide>
+      ))}      ... */}
+    </Swiper>
+            
+            </li> : null
 ))}
               </ul>
               <ReactPaginate

@@ -40,12 +40,6 @@ export default function ThankYou() {
     };
   }, []);
   
-  useEffect(() => {
-    if (1 == 3) {
- navigate("/") 
-
-    }
-  }, [boughtProducts])
 
      useEffect(() => {
        if (!localStorage.getItem("PRODS")) {
@@ -59,14 +53,18 @@ export default function ThankYou() {
 
 
          
-          setTimeout(() => {
+         
+
+    }, [])
+
+  useEffect(() => {
+ setTimeout(() => {
                    // localStorage.setItem("bought", false)
                               localStorage.setItem("PRODS", "")
 
 
-        }, 500);
-
-    }, [])
+        }, 0);
+  }, [])
 
    return (
   <>
